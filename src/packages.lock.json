@@ -8,6 +8,16 @@
         "resolved": "6.0.1",
         "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
       },
+      "FsHttp": {
+        "type": "Direct",
+        "requested": "[7.0.0, )",
+        "resolved": "7.0.0",
+        "contentHash": "Wo2VIZh+ouSRUtNIa1ajeKTZfr85rKFCfe30FMTtdlJ80rmBXhZmLYLoj/Hpp9lFOjYcGRR1lF3tL5wtkoYTmw==",
+        "dependencies": {
+          "FSharp.Core": "5.0.0",
+          "FSharp.Data": "4.0.1"
+        }
+      },
       "Giraffe": {
         "type": "Direct",
         "requested": "[6.0.0-alpha-2, )",
@@ -38,6 +48,14 @@
         "contentHash": "5LDZ36RYl/31dRl807Ad1WV3GwaYprYyPu6+pjTkjpjsv/e2wIs7/VMtcp04RKIjO9oANcvCahZWX1zpH2+tHg==",
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "6.10.0"
+        }
+      },
+      "FSharp.Data": {
+        "type": "Transitive",
+        "resolved": "4.0.1",
+        "contentHash": "JOwNoRjaqGaeDr1CtotBNd2c4vADDlygB85GpTStSosc+l4gFDSzx9ILyRuC5gkW/kK4JL7EZsFRoY+4/mZz2g==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
         }
       },
       "Microsoft.CSharp": {
