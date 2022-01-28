@@ -55,6 +55,7 @@ let webApp =
     choose [
         GET >=>
             choose [
+                route "/health" >=> Successful.OK "Healthy"
                 route "/token" >=> requiresAuthentication (RequestErrors.UNAUTHORIZED "Bearer" "gitlab-pat" "") >=> tokenHandler
             ]
         setStatusCode 404 >=> text "Not Found" ]
