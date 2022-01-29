@@ -122,7 +122,6 @@ if app.Environment.IsDevelopment() then app.UseDeveloperExceptionPage() |> ignor
 
 app.UseGiraffeErrorHandler(errorHandler)
    .UseHttpsRedirection() 
-   .UseStaticFiles()
    .UseAuthentication()
    .UseGiraffe(webApp)
 
