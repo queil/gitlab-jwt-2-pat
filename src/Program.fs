@@ -96,7 +96,11 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             if jwtOptions.Debug then
                 opts.Events <- JwtBearerEvents(OnMessageReceived = fun x ->
                      task {
-                        x.HttpContext.GetService<ILogger<JwtOptions>>().LogDebug("Token: {Token}", JwtSecurityTokenHandler().ReadJwtToken(x.Request.Headers.Authorization.ToString().Replace("Bearer ", "")))
+                        let token =
+                            match x.Request.Headers.Authorization.ToString() with
+                            | "" -> "(no token provided)"
+                            | authHeader -> JwtSecurityTokenHandler().ReadJwtToken(authHeader.ToString().Replace("Bearer ", "")).ToString()
+                        x.HttpContext.GetService<ILogger<JwtOptions>>().LogDebug("Token: {Token}", token)
                      })
             opts.TokenValidationParameters <- TokenValidationParameters(
                 ValidateIssuer = true,
