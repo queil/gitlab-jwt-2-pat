@@ -20,10 +20,15 @@ open Microsoft.IdentityModel.Tokens
 
 [<CLIMutable>]
 type GitlabOptions = {
-    hostname: string
-    apiKey: string
+    Hostname: string
+    ApiKey: string
+    SudoUserLogin: string
+    TokenConfig: TokenConfig
 }
-
+and [<CLIMutable>]
+TokenConfig = {
+    Scopes: string list
+}
 [<CLIMutable>]
 type JwtOptions = {
     Authority: string
@@ -37,7 +42,7 @@ Validate = {
 }
 
 let tokenHandler : HttpHandler  =
-   fun  (next : HttpFunc) (ctx : HttpContext) ->
+   fun  (_ : HttpFunc) (ctx : HttpContext) ->
 
         let opts = ctx.RequestServices.GetRequiredService<IOptions<GitlabOptions>>().Value
 
@@ -45,17 +50,19 @@ let tokenHandler : HttpHandler  =
             let! jwtString = ctx.GetTokenAsync("access_token")
             let jwt = JwtSecurityTokenHandler().ReadJwtToken(jwtString)
             let userId = jwt.Payload["user_id"]
-            let expiresAt = jwt.ValidTo.ToIsoString()
-            let name = jwt.Subject
             let result =
                 http {
-                   POST $"{opts.hostname}/api/v4/users/{userId}/impersonation_tokens"
-                   header "PRIVATE-TOKEN" opts.apiKey
-                   formUrlEncoded
-                     [
-                         "expires_at", expiresAt
-                         "name", name
-                     ]
+                   POST $"{opts.Hostname}/api/v4/users/{userId}/impersonation_tokens"
+                   header "PRIVATE-TOKEN" opts.ApiKey
+                   query [
+                       "sudo", opts.SudoUserLogin
+                   ]
+                   formUrlEncoded [
+                     "expires_at", jwt.ValidTo.ToIsoString()
+                     "name", jwt.Subject
+                     for s in opts.TokenConfig.Scopes do
+                       "scopes[]", s
+                  ]
                 }
                 |> Response.assertOk
                 |> Response.toStream
