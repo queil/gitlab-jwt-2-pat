@@ -64,7 +64,7 @@ let tokenHandler : HttpHandler  =
                        "scopes[]", s
                   ]
                 }
-                |> Response.assertOk
+                |> Response.assert2xx
                 |> Response.toStream
             let! responseContent = JsonSerializer.DeserializeAsync<{|token:string|}>(result)
             return! ctx.WriteStringAsync responseContent.token
