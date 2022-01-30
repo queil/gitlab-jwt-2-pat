@@ -7,7 +7,16 @@ Enables issuing short-lived impersonation tokens for the user authenticated in G
 ## :warning: Warning
 
 This project is experimental - use at your own risk. Hopefully GitLab makes a similar functionality [built-in at some point](https://gitlab.com/groups/gitlab-org/-/epics/3559). Also please note that GitLab's functionality around the JWTs is being under active development. Search for `CI_JOB_JWT` and `CI_JOB_JWT_V2` in [predefined variables](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html) for more info.
-## Example usage
+
+## The basics
+
+The server exposes two endpoints: 
+
+* `/token` - this is the main working endpoint requiring a standard `Authorization: Bearer your-encoded-token-here` header. The JWT token provided in the header gets validated (making sure the token is not expired and comes from a legitimate issuer - i.e. your GitLab instance). :warning: token audience validation must be turned off (via `JWT__VALIDATE__AUDIENCE=false`) for JWT tokens issued by GitLab version < 14.7 because it doesn't contain the `aud` claim. It is being fixed in the `CI_JOB_JWT_V2` which will become the default in the future but gets released as an alpha feature in GitLab 14.7.
+
+* `/health` - an endpoint that can be used for health-checks (e.g. in Kubernetes)
+
+## Example usage in CI
 
 ```bash
 git push https://$GITLAB_USER_LOGIN:$(curl -sS --fail-with-body -H "Authorization: Bearer $CI_JOB_JWT" https://gitlab-jtp.example.com/token)@$CI_SERVER_HOST/$CI_PROJECT_PATH.git HEAD:$CI_COMMIT_REF_NAME
@@ -27,7 +36,7 @@ JWT settings:
 
 * `JWT__ISSUER` - JWT's issuer gets validated against the specified value
 * `JWT__AUTHORITY` - used to retrieve OIDC metadata (from `$JWT__AUTHORITY/.well-known/openid-configuration`)
-* `JWT__DEBUG` - if set to true encoded JWTs gets logged to stdout. Default: `false`.
+* `JWT__DEBUG` - if set to true encoded JWTs gets logged to stdout. Also make sure you set `Logging__LogLevel__Default` to `Debug` otherwise the tokens won't be logged. Default: `false`.
 * `JWT__VALIDATE__AUDIENCE` - needs to be set to false for GitLab version < 14.7 as the JWT token in earlier versions doesn't contain `aud`. 
 
 Other settings:
