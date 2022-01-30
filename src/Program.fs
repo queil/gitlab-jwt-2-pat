@@ -26,6 +26,7 @@ type GitlabOptions = {
 
 [<CLIMutable>]
 type JwtOptions = {
+    Authority: string
     Issuer: string
     Validate: Validate
     Debug: bool
@@ -41,7 +42,7 @@ let tokenHandler : HttpHandler  =
         let opts = ctx.RequestServices.GetRequiredService<IOptions<GitlabOptions>>().Value
 
         task {
-            let! jwtString = ctx.GetTokenAsync("Bearer")
+            let! jwtString = ctx.GetTokenAsync("access_token")
             let jwt = JwtSecurityTokenHandler().ReadJwtToken(jwtString)
             let userId = jwt.Payload["user_id"]
             let expiresAt = jwt.ValidTo.ToIsoString()
@@ -90,9 +91,8 @@ let jwtOptions = builder.Configuration.GetSection("jwt").Get<JwtOptions>()
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(fun opts ->
             opts.BackchannelHttpHandler <- new HttpClientHandler()
-            opts.Authority <- jwtOptions.Issuer
-            opts.RequireHttpsMetadata <- false
-            opts.MetadataAddress <- $"{jwtOptions.Issuer}/.well-known/openid-configuration"
+            opts.Authority <- jwtOptions.Authority
+            opts.SaveToken <- true
             if jwtOptions.Debug then
                 opts.Events <- JwtBearerEvents(OnMessageReceived = fun x ->
                      task {
@@ -106,6 +106,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 ValidIssuer = jwtOptions.Issuer
             )
         ) |> ignore
+
 services.Configure<GitlabOptions>(builder.Configuration.GetSection("gitlab")) |> ignore
 services.AddCors()    |> ignore
 services.AddGiraffe() |> ignore
