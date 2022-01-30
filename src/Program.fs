@@ -28,6 +28,7 @@ type GitlabOptions = {
 and [<CLIMutable>]
 TokenConfig = {
     Scopes: string seq
+    ExpiresIn: TimeSpan
 }
 [<CLIMutable>]
 type JwtOptions = {
@@ -58,7 +59,7 @@ let tokenHandler : HttpHandler  =
                        "sudo", opts.SudoUserLogin
                    ]
                    formUrlEncoded [
-                     "expires_at", jwt.ValidTo.ToIsoString()
+                     "expires_at", DateTimeOffset.Now.Add(opts.TokenConfig.ExpiresIn).ToIsoString()
                      "name", jwt.Subject
                      for s in opts.TokenConfig.Scopes do
                        "scopes[]", s
