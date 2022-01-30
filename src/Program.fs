@@ -27,7 +27,7 @@ type GitlabOptions = {
 }
 and [<CLIMutable>]
 TokenConfig = {
-    Scopes: string list
+    Scopes: string seq
 }
 [<CLIMutable>]
 type JwtOptions = {
