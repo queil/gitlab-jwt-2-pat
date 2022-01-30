@@ -12,7 +12,7 @@ This project is experimental - use at your own risk. Hopefully GitLab makes a si
 
 The server exposes two endpoints: 
 
-* `/token` - this is the main working endpoint requiring a standard `Authorization: Bearer your-encoded-token-here` header. The JWT token provided in the header gets validated (making sure the token is not expired and comes from a legitimate issuer - i.e. your GitLab instance). :warning: Token audience validation must be turned off (via `JWT__VALIDATE__AUDIENCE=false`) for JWT tokens issued by GitLab version < 14.7 because it doesn't contain the `aud` claim. It is being fixed in the `CI_JOB_JWT_V2` which will become the default in the future but gets released as an alpha feature in GitLab 14.7.
+* `/token` - this is the main working endpoint requiring a standard `Authorization: Bearer your-encoded-token-here` header. The JWT token provided in the header gets validated (making sure the token is not expired and comes from a legitimate issuer - i.e. your GitLab instance). :warning: Token audience validation must be turned off (via `JWT__VALIDATE__AUDIENCE=false`) for JWT tokens issued by GitLab version < 14.7 because it doesn't contain the `aud` claim. It is being fixed in the `CI_JOB_JWT_V2` which will become the default in the future but it only gets released as an alpha feature in GitLab 14.7.
 
 * `/health` - an endpoint that can be used for health-checks (e.g. in Kubernetes)
 
