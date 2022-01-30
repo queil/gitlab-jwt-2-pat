@@ -59,7 +59,7 @@ let tokenHandler : HttpHandler  =
                        "sudo", opts.SudoUserLogin
                    ]
                    formUrlEncoded [
-                     "expires_at", DateTimeOffset.Now.Add(opts.TokenConfig.ExpiresIn).ToIsoString()
+                     "expires_at", DateTime.UtcNow.Add(opts.TokenConfig.ExpiresIn).ToString("o")
                      "name", jwt.Subject
                      for s in opts.TokenConfig.Scopes do
                        "scopes[]", s
